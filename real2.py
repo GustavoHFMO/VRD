@@ -17,6 +17,6 @@ EXP = Experiment(pasta='ICDM/Real/Time Execution')
 MODELS = [LDD_DSDA(train_size=200), POGMM_VRD(batch_size=200)]
 
 #4. RUNNING THE MODELS CHOSEN
-EXP.run(cross_validation=True, models=MODELS, datasets=[9, 10], executions=[0, 4])
+EXP.run(cross_validation=True, models=MODELS, datasets=[9, 10], executions=[2, 4])
 
 
