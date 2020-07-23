@@ -19,7 +19,7 @@ warnings.simplefilter("ignore")
 np.random.seed(0)
 
 class GMM_KDN(GMM):
-    def __init__(self, noise_threshold=0.8, n_vizinhos=5, kmax=2, emit=5, stop_criterion=True):
+    def __init__(self, noise_threshold=0.8, n_vizinhos=5, kmax=2, emit=3, stop_criterion=True):
         '''
         Constructor of GMM_VD model
         :kdn_train: to activate the use of kdn on training
@@ -989,7 +989,6 @@ class POGMM_VRD(PREQUENTIAL_SUPER):
     '''
     METHODS TO  EVALUATE GAUSSIANS FROM POOL
     '''
-    
         
     def evaluateGaussians(self, t, drifts, classifier, W, POOL_gaussians, plot):
         '''
@@ -1033,10 +1032,7 @@ class POGMM_VRD(PREQUENTIAL_SUPER):
                 label = int(model_wo_gaussian.gaussians[i].label) 
                 # removing the gaussian with drift
                 model_wo_gaussian.removeGaussian(i)
-                # plotting the model without gaussian
                 ##################################################################
-                    
-                    
                     
                 ##################### creating new models #########################
                 for j, gaussian in enumerate(POOL_gaussians[label]):
@@ -1047,12 +1043,8 @@ class POGMM_VRD(PREQUENTIAL_SUPER):
                     # adding new gaussian
                     new_model.addGaussian(gaussian)
                     new_model.updateWeight()
-                        
                     #  evaluating the accuracy of the new model
                     acc = accuracy_score(new_model.predict(X), Y)
-                    
-                    
-                    print("Gaussian drift["+str(i)+"] add["+str(j)+"]: ", acc)
                     
                     if(plot):
                         # to follow the execution
@@ -1064,10 +1056,8 @@ class POGMM_VRD(PREQUENTIAL_SUPER):
                         best_model = copy.deepcopy(new_model)
                         best_accuracy = acc
                     ##########################################################
-                        
                     
                 ####################################################################
-                        
                     
                 ####################################################################
                 # fixing the best model
@@ -1298,7 +1288,7 @@ class POGMM_VRD(PREQUENTIAL_SUPER):
         ########### 2.1. training classifier ##########################
         if(self.POOL_TRAINING):
             # training the classifier and the pool of GMM's
-            self.CLASSIFIER, POOL_models = self.getClassifierAndPool(self.NUM_MODELS, Train, plot=False)
+            self.CLASSIFIER, POOL_models = self.getClassifierAndPool(self.NUM_MODELS, Train, plot)
             
             if(self.POOL_REUSING):
                 # getting the pool of Gaussians
@@ -1406,7 +1396,7 @@ class POGMM_VRD(PREQUENTIAL_SUPER):
                         # evaluating the data into the validation window
                         #print("Normal")
                         #self.CLASSIFIER, drifts = self.removeObsoleteGaussians(i, drifts, self.CLASSIFIER, Val, plot)
-                        self.CLASSIFIER = self.evaluateGaussians(i, drifts, self.CLASSIFIER, Val, self.POOL_gaussians, plot=False)
+                        self.CLASSIFIER = self.evaluateGaussians(i, drifts, self.CLASSIFIER, Val, self.POOL_gaussians, plot)
                         # stopping the evaluation
                         self.EVALUATION = False
                 ################################## 8. ####################################################################
@@ -1458,7 +1448,7 @@ class POGMM_VRD(PREQUENTIAL_SUPER):
                         #print("Drift")
                         # evaluating the data into the validation window
                         #self.CLASSIFIER, drifts = self.removeObsoleteGaussians(i, drifts, self.CLASSIFIER, Train, plot)
-                        self.CLASSIFIER = self.evaluateGaussians(i, drifts, self.CLASSIFIER, Train, self.POOL_gaussians, plot=False)
+                        self.CLASSIFIER = self.evaluateGaussians(i, drifts, self.CLASSIFIER, Train, self.POOL_gaussians, plot)
                         # stopping the evaluation
                         self.EVALUATION = False
                 ############# 10.3. #########################################################
@@ -1476,7 +1466,7 @@ class POGMM_VRD(PREQUENTIAL_SUPER):
                         #self.CLASSIFIER.plotGmm("Reset antes")
                     # training the pool of classifiers
                     if(self.POOL_TRAINING):
-                        self.CLASSIFIER, POOL_models = self.getClassifierAndPool(self.NUM_MODELS, Train, plot=False)
+                        self.CLASSIFIER, POOL_models = self.getClassifierAndPool(self.NUM_MODELS, Train, plot)
                         # adding the models generated into pool
                         if(self.POOL_REUSING):
                             self.POOL_gaussians = self.insertingPoolByClass(POOL_models, self.POOL_gaussians, Train, plot=False)
@@ -1519,20 +1509,20 @@ class POGMM_VRD(PREQUENTIAL_SUPER):
                 self.printIterative(i)
                 
 def main():
-    import time
     
-    i = 6
-    #dataset = ['PAKDD', 'elec', 'noaa']
-    #labels, _, stream_records = ARFFReader.read("../data_streams/real/"+dataset[i]+".arff")
-    dataset = ['circles', 'sine1', 'sine2', 'virtual_5changes', 'virtual_9changes', 'SEA', 'SEARec']
-    labels, _, stream_records = ARFFReader.read("../data_streams/_synthetic/"+dataset[i]+".arff")
+    i = 2
+    dataset = ['PAKDD', 'elec', 'noaa']
+    labels, _, stream_records = ARFFReader.read("../data_streams/real/"+dataset[i]+".arff")
+    #dataset = ['circles', 'sine1', 'sine2', 'virtual_5changes', 'virtual_9changes', 'SEA', 'SEARec']
+    #labels, _, stream_records = ARFFReader.read("../data_streams/_synthetic/"+dataset[i]+".arff")
     #stream_records = stream_records[700:2600]
     
     #4. instantiate the prequetial
-    preq = POGMM_VRD(batch_size=50, 
+    preq = POGMM_VRD(batch_size=200, 
                      pool_training=True, 
                      pool_reusing=True)
     
+    import time
     a = time.time()
     #5. execute the prequential
     preq.run(labels, 
