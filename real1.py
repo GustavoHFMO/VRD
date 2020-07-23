@@ -14,7 +14,7 @@ from competitive_algorithms.ldd_dsda import LDD_DSDA
 EXP = Experiment(pasta='ICDM/Real/Time Execution')
     
 # 2. INSTANTIATE THE MODELS TO BE RUNNED
-MODELS = [LDD_DSDA(train_size=200), POGMM_VRD(batch_size=200)]
+MODELS = [POGMM_VRD(batch_size=200)]
 
 #4. RUNNING THE MODELS CHOSEN
 EXP.run(cross_validation=True, models=MODELS, datasets=[9, 10], executions=[7, 11])
