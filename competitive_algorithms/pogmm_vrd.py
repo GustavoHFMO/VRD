@@ -19,7 +19,7 @@ warnings.simplefilter("ignore")
 np.random.seed(0)
 
 class GMM_KDN(GMM):
-    def __init__(self, noise_threshold=0.8, n_vizinhos=5, kmax=2, emit=3, stop_criterion=True):
+    def __init__(self, noise_threshold=0.8, n_vizinhos=5, kmax=2, emit=10, stop_criterion=True):
         '''
         Constructor of GMM_VD model
         :kdn_train: to activate the use of kdn on training
@@ -1510,7 +1510,7 @@ class POGMM_VRD(PREQUENTIAL_SUPER):
                 
 def main():
     
-    i = 2
+    i = 0
     dataset = ['PAKDD', 'elec', 'noaa']
     labels, _, stream_records = ARFFReader.read("../data_streams/real/"+dataset[i]+".arff")
     #dataset = ['circles', 'sine1', 'sine2', 'virtual_5changes', 'virtual_9changes', 'SEA', 'SEARec']
@@ -1529,7 +1529,7 @@ def main():
              stream_records, 
              cross_validation=True, 
              qtd_folds=30, 
-             fold=0, 
+             fold=7, 
              plot=False)
     b = time.time()
     
