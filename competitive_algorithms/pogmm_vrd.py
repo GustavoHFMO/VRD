@@ -11,6 +11,7 @@ from gaussian_models.gmm_unsupervised import Gaussian
 from sklearn.neighbors import NearestNeighbors
 from detectors.eddm import EDDM
 from sklearn.metrics.classification import accuracy_score
+from imblearn.metrics import geometric_mean_score
 al = Adjust_labels()
 import numpy as np
 import warnings
@@ -593,7 +594,7 @@ class OGMM(GMM_KDN):
         self.theta = self.min_classes
        
 class POGMM_VRD(PREQUENTIAL_SUPER):
-    def __init__(self, batch_size=200, num_models=5, P=10, pool_exclusion="older", tax=0.2, pool_training=True, pool_reusing=True):
+    def __init__(self, batch_size=200, num_models=5, P=10, pool_exclusion="older", metric="gmean", tax=0.2, pool_training=True, pool_reusing=True):
         '''
         method to use an gmm with a single train to classify on datastream
         :param: classifier: class with the classifier that will be used on stream
@@ -618,6 +619,7 @@ class POGMM_VRD(PREQUENTIAL_SUPER):
         self.NUM_MODELS = num_models
         self.P = P
         self.POOL_EXCLUSION = pool_exclusion
+        self.METRIC = metric
         
         
         # VARIABLES FOR RESULTS
@@ -712,14 +714,20 @@ class POGMM_VRD(PREQUENTIAL_SUPER):
             
             # initial model
             if(i==0):
-                best_acc = accuracy_score(model.predict(x_val), y_val)
+                if(self.METRIC=="accuracy"):
+                    best_acc = accuracy_score(model.predict(x_val), y_val)
+                elif(self.METRIC=="gmean"):
+                    best_acc = geometric_mean_score(model.predict(x_val), y_val)
                 best_index = i
                 acc = best_acc
             
             # other models
             else:
-                acc = accuracy_score(model.predict(x_val), y_val)
-            
+                if(self.METRIC=="accuracy"):
+                    acc = accuracy_score(model.predict(x_val), y_val)
+                elif(self.METRIC=="gmean"):
+                    acc = geometric_mean_score(model.predict(x_val), y_val)
+                
                 # to store the best model
                 if(acc >= best_acc):
                     best_acc = acc
@@ -1011,7 +1019,10 @@ class POGMM_VRD(PREQUENTIAL_SUPER):
         ########################## obsolete model #########################
             # storing the best accuracy for the received data
         best_model = classifier
-        best_accuracy = accuracy_score(best_model.predict(X), Y)
+        if(self.METRIC=="accuracy"):
+            best_accuracy = accuracy_score(best_model.predict(X), Y)
+        elif(self.METRIC=="gmean"):
+            best_accuracy = geometric_mean_score(best_model.predict(X), Y)
     
         # storing the base model in another variable to be changed
         model_wo_gaussian = copy.deepcopy(best_model)
@@ -1044,7 +1055,10 @@ class POGMM_VRD(PREQUENTIAL_SUPER):
                     new_model.addGaussian(gaussian)
                     new_model.updateWeight()
                     #  evaluating the accuracy of the new model
-                    acc = accuracy_score(new_model.predict(X), Y)
+                    if(self.METRIC=="accuracy"):
+                        acc = accuracy_score(new_model.predict(X), Y)
+                    elif(self.METRIC=="gmean"):
+                        acc = geometric_mean_score(new_model.predict(X), Y)
                     
                     if(plot):
                         # to follow the execution
@@ -1519,8 +1533,7 @@ def main():
     
     #4. instantiate the prequetial
     preq = POGMM_VRD(batch_size=200, 
-                     pool_training=True, 
-                     pool_reusing=True)
+                     metric="gmean")
     
     import time
     a = time.time()
