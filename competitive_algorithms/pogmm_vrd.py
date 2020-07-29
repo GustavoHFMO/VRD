@@ -1524,11 +1524,11 @@ class POGMM_VRD(PREQUENTIAL_SUPER):
                 
 def main():
     
-    i = 0
-    dataset = ['PAKDD', 'elec', 'noaa']
-    labels, _, stream_records = ARFFReader.read("../data_streams/real/"+dataset[i]+".arff")
-    #dataset = ['circles', 'sine1', 'sine2', 'virtual_5changes', 'virtual_9changes', 'SEA', 'SEARec']
-    #labels, _, stream_records = ARFFReader.read("../data_streams/_synthetic/"+dataset[i]+".arff")
+    i = 3
+    #dataset = ['PAKDD', 'elec', 'noaa']
+    #labels, _, stream_records = ARFFReader.read("../data_streams/real/"+dataset[i]+".arff")
+    dataset = ['circles', 'sine1', 'sine2', 'virtual_5changes', 'virtual_9changes', 'SEA', 'SEARec']
+    labels, _, stream_records = ARFFReader.read("../data_streams/_synthetic/"+dataset[i]+".arff")
     #stream_records = stream_records[700:2600]
     
     #4. instantiate the prequetial
@@ -1543,7 +1543,7 @@ def main():
              cross_validation=True, 
              qtd_folds=30, 
              fold=7, 
-             plot=False)
+             plot=True)
     b = time.time()
     
     print("tempo:", b-a)

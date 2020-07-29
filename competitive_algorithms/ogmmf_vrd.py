@@ -8,7 +8,8 @@ from data_streams.adjust_labels import Adjust_labels
 from streams.readers.arff_reader import ARFFReader
 from gaussian_models.gmm_super_old import GMM
 from sklearn.neighbors import NearestNeighbors
-from gaussian_models.gmm_super_old import Gaussian 
+from gaussian_models.gmm_super_old import Gaussian
+from imblearn.metrics import geometric_mean_score 
 from sklearn.metrics import accuracy_score
 from detectors.eddm import EDDM
 al = Adjust_labels()
@@ -517,7 +518,7 @@ class GMM_VD(GMM):
         return covariance
     
 class OGMMF_VRD(PREQUENTIAL_SUPER):
-    def __init__(self, window_size=200, Kmax=2, virtual=True, recorrencia=True):
+    def __init__(self, window_size=200, Kmax=2, metrica="gmean", virtual=True, recorrencia=True):
         '''
         method to use an gmm with a single train to classify on datastream
         :param: classifier: class with the classifier that will be used on stream
@@ -528,6 +529,7 @@ class OGMMF_VRD(PREQUENTIAL_SUPER):
         self.Kmax=Kmax
         self.CLASSIFIER = GMM_VD(kmax=self.Kmax)
         self.DETECTOR = EDDM(min_instance=window_size, C=1, W=0.5)
+        self.METRIC = metrica
         self.VIRTUAL = virtual
         self.RECURRENCE = recorrencia
         self.WINDOW_SIZE = window_size
@@ -664,7 +666,10 @@ class OGMMF_VRD(PREQUENTIAL_SUPER):
         errors = []
         for classifier in self.MEMORY:
             YI = classifier.predict(X)
-            errors.append(accuracy_score(Y, YI))
+            if(self.METRIC=="accuracy"):
+                errors.append(accuracy_score(Y, YI))
+            elif(self.METRIC=="gmean"):
+                errors.append(geometric_mean_score(Y, YI))
             
         # returning the best classifier
         return copy.deepcopy(self.MEMORY[np.argmax(errors)])
