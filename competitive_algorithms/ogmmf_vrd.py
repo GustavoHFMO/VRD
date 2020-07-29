@@ -518,7 +518,7 @@ class GMM_VD(GMM):
         return covariance
     
 class OGMMF_VRD(PREQUENTIAL_SUPER):
-    def __init__(self, window_size=200, Kmax=2, metrica="gmean", virtual=True, recorrencia=True):
+    def __init__(self, window_size=200, Kmax=2, metric="gmean", virtual=True, recorrencia=True):
         '''
         method to use an gmm with a single train to classify on datastream
         :param: classifier: class with the classifier that will be used on stream
@@ -529,7 +529,7 @@ class OGMMF_VRD(PREQUENTIAL_SUPER):
         self.Kmax=Kmax
         self.CLASSIFIER = GMM_VD(kmax=self.Kmax)
         self.DETECTOR = EDDM(min_instance=window_size, C=1, W=0.5)
-        self.METRIC = metrica
+        self.METRIC = metric
         self.VIRTUAL = virtual
         self.RECURRENCE = recorrencia
         self.WINDOW_SIZE = window_size
