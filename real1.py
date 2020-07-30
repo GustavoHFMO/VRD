@@ -14,10 +14,10 @@ from competitive_algorithms.ogmmf_vrd import OGMMF_VRD
 EXP = Experiment(pasta='ICDM (Gmean)/Real')
     
 # 2. INSTANTIATE THE MODELS TO BE RUNNED
-MODELS = [OGMMF_VRD(window_size=200, metric="gmean"), POGMM_VRD(batch_size=200, metric="gmean")]
+MODELS = [OGMMF_VRD(window_size=200, metric="gmean")]
 
 #4. RUNNING THE MODELS CHOSEN
-EXP.run(cross_validation=True, models=MODELS, datasets=[7, 9], executions=[0, 10])
+EXP.run(cross_validation=True, models=MODELS, datasets=[9, 10], executions=[0, 10])
 
 
 
